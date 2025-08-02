@@ -19,9 +19,13 @@ Modified template from http://keasigmadelta.com/kea-campus/
 
 Tou need a c/c++ compiler as well as CMAKE.
 
-mkdir build
-cd build
-cmake ..
-cmake --build .
-./Debug/RAYIMGUI_temp.exe
+    mkdir build
+
+    cd build
+
+    cmake ..
+
+    cmake --build .
+
+    ./Debug/easyFEM.exe
 
