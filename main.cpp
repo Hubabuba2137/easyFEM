@@ -9,12 +9,11 @@
 
 #include "include/geometry.h"
 #include "include/meshing.h"
-#include "src/mesh.cpp"
-#include "src/bowyer_watson.cpp"
 #include "src/axis.cpp"
 #include "src/grid.cpp"
 #include "src/mesh_creation.cpp"
 
+#include "src/mes/structs.h"
 
 //#include <cstdlib>
 
@@ -51,6 +50,7 @@ float mouseSensitivity = 8.0f;
 float camera_base_zoom = 80.0f;
 bool resetSensitivity = false;
 
+Fem::GlobalData configuration;
 
 int main()
 {
@@ -121,6 +121,30 @@ int main()
         if (ImGui::CollapsingHeader("Solver options"))
         {
             ImGui::BeginChild("##child2", ImVec2(0, 200), true);
+            ImGui::Text("Input solver data below");
+            
+            
+            ImGui::Text("Total time");
+            ImGui::InputFloat("s", &configuration.total_time);
+            ImGui::Text("Time step");
+            ImGui::InputFloat("s deltaT", &configuration.time_step);
+            ImGui::Text("Conductivity");
+            ImGui::InputFloat("W/mk", &configuration.conductivity);
+            ImGui::Text("Afla");
+            ImGui::InputFloat("Alfa", &configuration.alfa);
+            ImGui::Text("External temperature");
+            ImGui::InputFloat("°C T_ext", &configuration.tot);
+            ImGui::Text("Initial temperature");
+            ImGui::InputFloat("°C T0", &configuration.init_temperature);
+            ImGui::Text("Density");
+            ImGui::InputFloat("kg/m^3", &configuration.density);
+            ImGui::Text("Speific hest");
+            ImGui::InputFloat("J/kgK", &configuration.specific_heat);
+            
+            if (ImGui::Button("Solve")){
+                
+            }           
+
             ImGui::EndChild();
         }
 
@@ -152,6 +176,7 @@ int main()
         ImGui::End();
 
         rlImGuiEnd();
+
 
         // ------------------ CAMERA INTERACTION ------------------
         // Only pan/zoom when hovering MainPanel
@@ -232,8 +257,11 @@ int main()
             }
 
             if(IsKeyPressed(KEY_ENTER)){
+                //creating simple mesh  
                 mesh = meshing(polygon, spacing);
                 mesh_created = true;
+
+                //creating configuration and mesh object
             }
         }
 

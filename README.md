@@ -17,7 +17,7 @@ Modified template from http://keasigmadelta.com/kea-campus/
 
 ## How to build 
 
-Tou need a c/c++ compiler as well as CMAKE.
+Tou need a c/c++ compiler, Raylib and CMAKE.
 
     mkdir build
 
