@@ -28,6 +28,22 @@ void pop_node(go::Vertex &mesh){
     }
 }
 
-bool check_if_params_correct(Fem::GlobalData conf){
-    if(conf.)
+bool check_if_params_correct(Fem::GlobalData conf){  
+    if(conf.total_time <= 0.0){return false;}
+    else if(conf.time_step <=0.0){return false;}
+    else if(conf.conductivity <=0.0){return false;}
+    else if(conf.alfa<=0.0){return false;}
+    else if(conf.tot<=0.0){return false;}
+    else if(conf.init_temperature<= -273.0){return false;}
+    else if(conf.density<=0.0){return false;}
+    else if(conf.specific_heat<=0.0){return false;}
+    else{
+      return true;
+    }
+}
+
+void print_nodes(std::vector<Fem::Node> &nodes){
+  for(int i=0; i<nodes.size(); i++){
+    std::cout<<i<<", "<<nodes[i].x<<", "<<nodes[i].y<<"\n";  
+  }
 }
