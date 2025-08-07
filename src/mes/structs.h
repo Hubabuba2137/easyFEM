@@ -111,14 +111,14 @@ namespace Fem{
         std::vector<Element> elements;
 
         GlobalData(){
-            this->total_time=0;
-            this->time_step=0;
-            this->conductivity=0;
-            this->alfa=0;
-            this->tot=0;
-            this->init_temperature=0;
-            this->density=0;
-            this->specific_heat=0;
+            this->total_time=500;
+            this->time_step=50;
+            this->conductivity=25;
+            this->alfa=300;
+            this->tot=1200;
+            this->init_temperature=100;
+            this->density=7800;
+            this->specific_heat=700;
             this->node_number=0;
             this->elem_number=0;
         }
@@ -134,6 +134,10 @@ namespace Fem{
 
         std::vector<Node> nodes;
         std::vector<Element> elements;
+        
+        Solution(): Global_H(4,4), Global_C(4,4), Global_P(4,4){
+
+        }
 
         Solution(Matrix &Global_H, Matrix &Global_C, Matrix &Global_P, GlobalData &conf, std::vector<Node> &nodes, std::vector<Element> &elements): Global_H(4,4), Global_C(4,4), Global_P(4,4){
             this->Global_H = Global_H;
@@ -142,6 +146,14 @@ namespace Fem{
             this->conf = conf;
             this->nodes = nodes;
             this->elements = elements;
+        }
+
+        Solution(GlobalData data): Global_H(4,4), Global_C(4,4), Global_P(4,4){
+            this->conf=data;
+            this->nodes = data.nodes;
+            
+
+            this->elements = data.elements;
         }
     };
 }

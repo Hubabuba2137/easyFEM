@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm> // For std::remove_if
 #include "structs.h"
+#include "load_function.h"
 
 // Helper function to trim whitespace and carriage returns from strings
 std::string trim_string(const std::string &str) {

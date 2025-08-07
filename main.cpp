@@ -7,7 +7,7 @@
 #include "include/rlgl.h"
 #include "include/raymath.h"
 
-#include "include/geometry.h"
+#include "include/geometry.+h"
 #include "include/meshing.h"
 #include "src/axis.cpp"
 #include "src/grid.cpp"
@@ -15,6 +15,7 @@
 
 #include "src/mes/structs.h"
 
+#include "src/write_to_fem.cpp"
 //#include <cstdlib>
 
 /*//first time:
@@ -142,7 +143,7 @@ int main()
             ImGui::InputFloat("J/kgK", &configuration.specific_heat);
             
             if (ImGui::Button("Solve")){
-                
+                        
             }           
 
             ImGui::EndChild();

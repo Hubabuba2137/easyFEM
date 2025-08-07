@@ -4,7 +4,7 @@
 
 #include "../include/geometry.h"
 
-#include "mes/structs.h"
+#include "mes/"
 
 void add_new_node(Vector2 worldPos, go::Vertex &mesh){
     bool can_add_node = true;

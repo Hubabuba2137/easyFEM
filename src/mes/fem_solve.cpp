@@ -14,7 +14,7 @@
 #include "fem_funcs.cpp"
 #include "write_to_vtu.cpp"
 
-void solve(Fem::Solution solution, bool wrtie_to_vtu, bool write_temperature){
+void solve(Fem::Solution solution, bool wrtie_to_vtu=false, bool write_temperature=false){
     Fem::GlobalData conf = solution.conf;
     int node_number = conf.node_number;
 

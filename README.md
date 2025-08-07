@@ -2,11 +2,13 @@
 EasyFEM lets you solve nonstationary heat reansfer problem using finite element method to showcase its principles.
 
 ## ToDo
-    Adding FEM solver
+    Making FEM solver work
+
+    Making FEM solver work on different thread than main app
+    
+    Adding different kinds of boundary conditions
     
     Visualising results
-
-    Adding different kinds of boundary conditions
 
     Refining mesh generation
 
@@ -17,7 +19,7 @@ Modified template from http://keasigmadelta.com/kea-campus/
 
 ## How to build 
 
-Tou need a c/c++ compiler, Raylib and CMAKE.
+You need a c/c++ compiler, Raylib and CMAKE.
 
     mkdir build
 
