@@ -4,6 +4,8 @@
 
 #include "../include/geometry.h"
 
+#include "mes/structs.h"
+
 void add_new_node(Vector2 worldPos, go::Vertex &mesh){
     bool can_add_node = true;
     for(auto&it:mesh.vertices){
@@ -26,3 +28,6 @@ void pop_node(go::Vertex &mesh){
     }
 }
 
+bool check_if_params_correct(Fem::GlobalData conf){
+    if(conf.)
+}
