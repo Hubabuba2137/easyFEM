@@ -7,16 +7,13 @@
 #include "include/rlgl.h"
 #include "include/raymath.h"
 
-#include "include/geometry.h"
+#include "include/geometry.+h"
 #include "include/meshing.h"
 #include "src/axis.cpp"
 #include "src/grid.cpp"
 #include "src/mesh_creation.cpp"
 
 #include "src/mes/structs.h"
-#include "src/mes/load_function.h"
-#include "src/mes/fem_solve.cpp"
-
 
 #include "src/write_to_fem.cpp"
 //#include <cstdlib>
@@ -146,19 +143,7 @@ int main()
             ImGui::InputFloat("J/kgK", &configuration.specific_heat);
             
             if (ImGui::Button("Solve")){
-                if(!check_if_params_correct(configuration)){
-                    std::cout <<"cannot create configuration object\n"; 
-                }
-                else{
-                    //print_config(configuration);
-                    if(mesh_created){
-                        configuration.node_number=configuration.nodes.size();
-                        configuration.elem_number=configuration.elements.size();
-                        Fem::Solution solution(configuration);
-                        solve(solution, false, true);
-                    }
-                }
-
+                        
             }           
 
             ImGui::EndChild();
@@ -278,15 +263,6 @@ int main()
                 mesh_created = true;
 
                 //creating configuration and mesh object
-                
-                std::pair<std::vector<Fem::Node>, std::vector<Fem::Element> > result = convert_mesh_to_fem(mesh);
-                std::vector<Fem::Node> fem_nodes = result.first;
-                std::vector<Fem::Element> fem_elements = result.second;
-
-                //print_nodes(fem_nodes);
-                
-                configuration.nodes = fem_nodes;
-                configuration.elements = fem_elements;
             }
         }
 
