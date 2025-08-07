@@ -27,7 +27,7 @@ void pop_node(go::Vertex &mesh){
         mesh.create_edges();
     }
 }
-
+/*
 bool check_if_params_correct(Fem::GlobalData conf){
     if(conf.)
-}
+}*/
