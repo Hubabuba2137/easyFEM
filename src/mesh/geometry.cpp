@@ -1,4 +1,10 @@
-#include "../include/geometry.h"
+#include "geometry.h"
+
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <limits>
+#include <iostream>
 
 namespace go {
     int Node::next_id = 0; // Initialize static ID counter

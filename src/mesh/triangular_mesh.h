@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 
-#include "../include/geometry.h"
-#include "mes/mes.h"
+#include "geometry.h"
+#include "../mes/mes.h"
 
 void add_new_node(Vector2 worldPos, go::Vertex &polygon);
 void pop_node(go::Vertex &polygon);

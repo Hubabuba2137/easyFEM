@@ -16,14 +16,20 @@ include(cmake/rlimgui.cmake)
 # ===== Our Project =====
 set(SOURCE_FILES
     main.cpp
-    src/triangular_mesh.cpp
-    src/geometry.cpp
+    src/main_window.cpp
+    src/mesh/triangular_mesh.cpp
+    src/mesh/geometry.cpp
     src/mes/mes.cpp
     src/mes/matrix/matrix.cpp
-    src/to_fem.cpp)
+    src/app_ui/axis.cpp
+    src/app_ui/grid.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} rlimgui)
+
+# Add imgui-src to include directories
+include_directories(${CMAKE_SOURCE_DIR}/_deps/imgui-src)
+include_directories(${CMAKE_SOURCE_DIR}/_deps/imgui-src)
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)

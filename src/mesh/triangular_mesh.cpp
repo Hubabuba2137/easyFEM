@@ -6,7 +6,6 @@
 #include <fstream>
 
 #include "triangular_mesh.h"
-#include "mes/mes.h"
 
 void add_new_node(Vector2 worldPos, go::Vertex &polygon){
     go::Node temp_node(worldPos);

@@ -1,12 +1,7 @@
 #pragma once
 
 #include <raylib.h>
-#include <iostream>
 #include <vector>
-#include <algorithm>
-#include <string>
-#include <cmath>
-#include <limits>
 
 //resusing old library made for computational geometry class
 
@@ -98,5 +93,3 @@ namespace go{
         void draw(float scale);
     };
 }
-
-

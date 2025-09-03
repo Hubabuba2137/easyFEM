@@ -1,9 +1,10 @@
 #include "imgui.h"
 
 #include "raylib.h"
-#include "../include/rlgl.h"
-#include "../include/raymath.h"
-#include "../include/axis.h"
+#include "../../include/rlgl.h"
+#include "../../include/raymath.h"
+
+#include "axis.h"
 
 #include "rlImGui.h"
 #include "rlImGuiColors.h"
