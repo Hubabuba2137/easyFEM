@@ -21,9 +21,12 @@ namespace msh{
     void filter_triangles(std::vector<go::Triangle> &triangles, go::Vertex &polygon);
 
     std::vector<go::Triangle> bowyer_watson(std::vector<go::Node>& node_list);
-
+    
     std::vector<go::Vertex> triangles_to_quads(std::vector<go::Triangle> &triangles, std::vector<go::Node> &nodes);
     std::vector<go::Vertex> create_quad_mesh(go::Vertex &polygon, const float &spacing, std::vector<go::Node> &nodes);
+
+    bool is_node_on_segment(const go::Segment& edge, const go::Node &node);
+    std::vector<go::Node> create_bcs(const std::vector<go::Node> &all_nodes, const go::Vertex polygon);
 }
 
 

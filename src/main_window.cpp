@@ -231,8 +231,8 @@ MainWindow::MainWindow()
             if(IsKeyPressed(KEY_ENTER)){
                 //creating simple mesh
 
-                bc_nodes = msh::add_boundary_nodes_on_vertex(polygon, spacing);
                 mesh = msh::create_quad_mesh(polygon, spacing, glob_nodes);
+                bc_nodes = msh::create_bcs(glob_nodes, polygon);
 
                 mesh_created = true;
             }

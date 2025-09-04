@@ -412,6 +412,41 @@ namespace msh{
 
         return mesh;
     }
+
+    //ustawiamy które punkty są bc
+
+    bool is_node_on_segment(const go::Segment& edge,  const go::Node &node)
+    {
+        float crossProduct = (node.pos.y - edge.tab[0].pos.y) * (edge.tab[1].pos.x - edge.tab[0].pos.x) -
+                             (node.pos.x - edge.tab[0].pos.x) * (edge.tab[1].pos.y - edge.tab[0].pos.y);
+
+        if (std::abs(crossProduct) > 1e-6) {
+            return false;
+        }
+
+        float minX = std::min(edge.tab[0].pos.x, edge.tab[1].pos.x);
+        float maxX = std::max(edge.tab[0].pos.x, edge.tab[1].pos.x);
+        float minY = std::min(edge.tab[0].pos.y, edge.tab[1].pos.y);
+        float maxY = std::max(edge.tab[0].pos.y, edge.tab[1].pos.y);
+
+        return (node.pos.x >= minX && node.pos.x <= maxX &&
+                node.pos.y >= minY && node.pos.y <= maxY);
+    }
+
+    std::vector<go::Node> create_bcs(const std::vector<go::Node> &all_nodes, const go::Vertex polygon)
+    {
+        std::vector<go::Node> bc_nodes;
+
+        for(const go::Node& node:all_nodes){
+            for(const go::Segment& edge:polygon.edges){
+                if(is_node_on_segment(edge, node)){
+                    bc_nodes.push_back(node);
+                }
+            }
+        }
+
+        return bc_nodes;
+    }
 }
 
 

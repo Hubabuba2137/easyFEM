@@ -4,13 +4,17 @@ EasyFEM lets you solve nonstationary heat reansfer problem using finite element 
 
 ## ToDo
 
-    Making FEM solver work
-
     Making FEM solver work on different thread than main app
+
+    Adding status bar
     
     Visualising results
 
-## RaylibImGUI 
+    Adding ability to specify boundary conditions
+
+    Refining mesh generation
+
+## RaylibImGUI Template
 Using template from http://keasigmadelta.com/kea-campus/
 
 ## How to build 

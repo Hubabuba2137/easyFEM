@@ -74,9 +74,6 @@ namespace go{
         void draw_nodes();
         void add_vertex(Node node);
 
-        void move(int dx, int dy);
-        void set_pos(int x, int y);
-
         bool is_node_inside(Node &point);
         void sort_vertices_by_position();
     };
