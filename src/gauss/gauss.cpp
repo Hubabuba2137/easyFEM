@@ -1,11 +1,10 @@
-#include <vector>
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
 
-#include "../mes/matrix/matrix.h"
-/*
-std::vector<double> Gauss(const Fem::Matrix& A, std::vector<double>& b) {
+#include "gauss.h"
+
+std::vector<double> Gauss(Fem::Matrix& A, std::vector<double>& b) {
     int n = A.getRows();
     Fem::Matrix augmentedMatrix = A;
     for (int i = 0; i < n; ++i) {
@@ -38,8 +37,9 @@ std::vector<double> Gauss(const Fem::Matrix& A, std::vector<double>& b) {
     }
 
     return b;
-}*/
+}
 
+/*
 std::vector<double> Gauss(Fem::Matrix& A, std::vector<double>& b) {
     int n = A.getRows();
     if ((int)b.size() != n) {
@@ -96,4 +96,4 @@ std::vector<double> Gauss(Fem::Matrix& A, std::vector<double>& b) {
         b[i] = xi;
     }
     return b;
-}
+}*/

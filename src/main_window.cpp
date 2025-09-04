@@ -13,7 +13,7 @@
 
 #include "mes/mes.h"
 #include "mesh/geometry.h"
-#include "mesh/triangular_mesh.h"
+#include "mesh/mesh.h"
 #include "main_window.h"
 
 MainWindow::MainWindow()
@@ -28,7 +28,7 @@ MainWindow::MainWindow()
     camera.zoom = camera_base_zoom;
 
     go::Vertex polygon;
-    std::vector<go::Triangle> mesh;
+    std::vector<go::Vertex> mesh;
 
     while (!WindowShouldClose())
     {
@@ -107,8 +107,8 @@ MainWindow::MainWindow()
             }
 
             if (ImGui::Button("Solve")){
-                Fem::Solution solution("../../Data/fem_data.txt");
-                solution.solve(true,true);
+                Fem::Solution solution(DATA_DIR "/fem_data.txt");
+                solution.solve(false,true);
             }
             ImGui::EndChild();
         }
@@ -232,7 +232,7 @@ MainWindow::MainWindow()
                 //creating simple mesh
 
                 bc_nodes = msh::add_boundary_nodes_on_vertex(polygon, spacing);
-                msh::triangulate_mesh(polygon, spacing, mesh, glob_nodes);
+                mesh = msh::create_quad_mesh(polygon, spacing, glob_nodes);
 
                 mesh_created = true;
             }

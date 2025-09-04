@@ -1,11 +1,13 @@
+#include "mesh.h"
+
+#include "../mes/mes.h"
+
+#include "fstream"
 #include <unordered_set>
 #include <cmath>
 #include <algorithm>
 #include <iostream>
 #include <unordered_map>
-#include <fstream>
-
-#include "triangular_mesh.h"
 
 void add_new_node(Vector2 worldPos, go::Vertex &polygon){
     go::Node temp_node(worldPos);
@@ -315,40 +317,66 @@ namespace msh{
         return 0.25*(std::sqrt((a+b+c)*(-a+b+c)*(a-b+c)*(a+b-c)));
     }
 
+    std::vector<go::Vertex> triangles_to_quads(std::vector<go::Triangle> &triangles, std::vector<go::Node> &nodes){
+        std::vector<go::Vertex> result;
 
-    //algorithm taken from:  Owen, Steven. (2000). A Survey of Unstructured Mesh Generation Technology. 7th International Meshing Roundtable. 3.
-    //section 2.2.1
+        //prealokujemy pamięć bo znamy apriori wielkość wektora
+        result.reserve(triangles.size()*3);
 
-    //todo: dodać error handling że jak nie da się dodać punktów bo spacing za duży
-    //to coś zrobić
-    void triangulate_mesh(go::Vertex polygon, float spacing, std::vector<go::Triangle> &triangles, std::vector<go::Node> &nodes){
+        for(go::Triangle& tr:triangles){
+            go::Node P1 = tr.points[0];
+            go::Node P2 = tr.points[1];
+            go::Node P3 = tr.points[2];
+
+            go::Node P4((P1.pos.x+P2.pos.x+P3.pos.x)/3.0f,(P1.pos.y+P2.pos.y+P3.pos.y)/3.0f);
+            go::Node P5((P1.pos.x+P2.pos.x)/2,(P1.pos.y+P2.pos.y)/2);
+            go::Node P6((P2.pos.x+P3.pos.x)/2,(P2.pos.y+P3.pos.y)/2);
+            go::Node P7((P3.pos.x+P1.pos.x)/2,(P3.pos.y+P1.pos.y)/2);
+
+            std::vector<go::Node> quad_nodes1 = {P1, P5, P4, P7};
+            std::vector<go::Node> quad_nodes2 = {P5, P2, P6, P4};
+            std::vector<go::Node> quad_nodes3 = {P6, P3, P7, P4};
+
+            go::Vertex quad1(quad_nodes1);
+            go::Vertex quad2(quad_nodes2);
+            go::Vertex quad3(quad_nodes3);
+
+            result.push_back(quad1);
+            result.push_back(quad2);
+            result.push_back(quad3);
+
+            nodes.push_back(P4);
+            nodes.push_back(P5);
+            nodes.push_back(P6);
+            nodes.push_back(P7);
+        }
+
+        return result;
+    }
+
+    std::vector<go::Vertex> create_quad_mesh(go::Vertex &polygon, const float &spacing, std::vector<go::Node> &nodes){
+        std::vector<go::Vertex> mesh; 
 
         //1. interpolujemy punkty na brzegach
         nodes = add_boundary_nodes_on_vertex(polygon, spacing);
         //std::cout<< int_nodes.size()<<"\n'";
         
-        //2. inicjalizacja siatki
+        //2. inicjalizacja siatki trójkątnej
+        std::vector<go::Triangle> triangles;
+
         triangles = bowyer_watson(nodes);
         float mean_size = 0.0f; 
         for(go::Triangle tr:triangles){
             mean_size += tr_size(tr);
         }
         mean_size = mean_size/triangles.size();
-
-        constexpr float divider = (4.0f * 1.732f) / 3.0f;
-
-        int max_iter = 10;
-        int current_iter = 0;
-        while((std::sqrt(divider*mean_size) > spacing) && (current_iter < max_iter)){
-            current_iter++;
-            //std::cout<<current_iter<<"\n";
+        
+        for(int i=0; i<1; i++){
             //3. liczymy średnią wielkość trójkątów i średnią odległość między circumcenter
             for(go::Triangle tr:triangles){
                 mean_size += tr_size(tr);
             }
             mean_size = mean_size/static_cast<int>(triangles.size());
-            
-            //std::cout<<std::sqrt(divider*mean_size)<<" <-> " << spacing<<"\n";
             
             //4. dodajemy nowe punkty wewnątrz każdego trójkąta
             //int_nodes.resize(triangles.size()-1);
@@ -378,6 +406,11 @@ namespace msh{
             nodes = polygon.vertices;
             triangles = bowyer_watson(nodes);
         }
+        
+        //3. podział trójkątów na quad
+        mesh = triangles_to_quads(triangles, nodes);
+
+        return mesh;
     }
 }
 
@@ -401,9 +434,10 @@ namespace to_fem{
     };
 
     
-    std::vector<Triangle_ref> convert_to_fem(const std::vector<go::Node> &nodes, const std::vector<go::Triangle> &triangles){
+    std::vector<Quad_ref> convert_to_fem(const std::vector<go::Node> &nodes, const std::vector<go::Vertex> &quad_mesh){
+
         std::unordered_map<Node_key, int, Node_hashing> node_to_id_map;
-        std::vector<Triangle_ref> triangle_refs;
+        std::vector<Quad_ref> quad_refs;
 
 
         for (int i = 0; i < nodes.size(); ++i) {
@@ -411,30 +445,47 @@ namespace to_fem{
         }
         
 
-        for (const auto& triangle : triangles) {
+        for (const auto& quad : quad_mesh) {
 
-            Triangle_ref ref_element;
-            for (int i = 0; i < 3; ++i) {
-                Node_key key = {triangle.points[i].pos.x, triangle.points[i].pos.y};
+            Quad_ref ref_element;
+            for (int i = 0; i < 4; ++i) {
+                Node_key key = {quad.vertices[i].pos.x, quad.vertices[i].pos.y};
                 auto it = node_to_id_map.find(key);
                 if (it != node_to_id_map.end()) {
                     ref_element.node_ids[i] = it->second;
                 } else {
+                    // Handle the case where a node is not found, if necessary
                     ref_element.node_ids[i] = -1; // Or throw an exception
                 }
             }
-            triangle_refs.push_back(ref_element);
+            quad_refs.push_back(ref_element);
         }
 
-        return triangle_refs;
+        return quad_refs;
+    }
+
+    void print_mesh(const std::vector<go::Node> &nodes, std::vector<Quad_ref> triangle_refs){
+        std::cout<<"*Nodes\n";
+        for(int i=0; i<nodes.size(); i++){
+            std::cout<<i+1<<", "<<nodes[i].pos.x<<", "<<nodes[i].pos.y<<"\n";
+        }
+
+        std::cout<<"*Elements\n";
+        for(int i=0; i<triangle_refs.size(); i++){
+            std::cout<<i+1<<", "<<
+            triangle_refs[i].node_ids[0]+1<<","<<
+            triangle_refs[i].node_ids[1]+1<<","<<
+            triangle_refs[i].node_ids[2]+1<<","<<
+            triangle_refs[i].node_ids[3]+1<<"\n";
+        }
     }
 
     void write_to_FEM(const std::vector<go::Node> &nodes, 
                 const std::vector<go::Node> &bc_nodes,
                 const Fem::GlobalData &conf,
-                const std::vector<go::Triangle> mesh)
+                const std::vector<go::Vertex> mesh)
     {
-        std::string file_name = "../Data/fem_data.txt";
+        std::string file_name = DATA_DIR "/fem_data.txt";
         std::ofstream file(file_name, std::ios::out);
 
         if(!file.is_open()){
@@ -442,7 +493,7 @@ namespace to_fem{
             return;
         }
 
-        std::vector<Triangle_ref> triangle_refs = convert_to_fem(nodes, mesh);
+        std::vector<Quad_ref> quad_refs = convert_to_fem(nodes, mesh);
 
         file << "SimulationTime "      << conf.total_time      << "\n";
         file << "SimulationStepTime "  << conf.time_step       << "\n";
@@ -451,18 +502,19 @@ namespace to_fem{
         file << "Density "             << conf.density         << "\n";
         file << "SpecificHeat "        << conf.specific_heat   << "\n";
         file << "Nodes_number "        << nodes.size()         << "\n";
-        file << "Elements_number "     << triangle_refs.size()          << "\n";
+        file << "Elements_number "     << quad_refs.size()          << "\n";
 
-        file << "*Nodes\n";
+        file << "*Node\n";
         for(size_t i=0;i<nodes.size();i++)
             file << (i+1) << ", " << nodes[i].pos.x << ", " << nodes[i].pos.y << "\n";
 
-        file << "*Elements\n";
-        for(size_t i=0;i<triangle_refs.size();i++){
+        file << "*Element\n";
+        for(size_t i=0;i<quad_refs.size();i++){
             file << i+1 <<", " << 
-            triangle_refs[i].node_ids[0]+1 <<", " << 
-            triangle_refs[i].node_ids[1]+1 <<", " << 
-            triangle_refs[i].node_ids[2]+1 <<"\n";
+            quad_refs[i].node_ids[0]+1 <<", " << 
+            quad_refs[i].node_ids[1]+1 <<", " << 
+            quad_refs[i].node_ids[2]+1 <<", " << 
+            quad_refs[i].node_ids[3]+1 <<"\n";
         }
 
         file << "*BC\n";
@@ -492,5 +544,4 @@ namespace to_fem{
         std::cout << "File data written\n";
         file.close();
     }
-
 }
