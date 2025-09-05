@@ -108,7 +108,7 @@ MainWindow::MainWindow()
 
             if (ImGui::Button("Solve")){
                 Fem::Solution solution(DATA_DIR "/fem_data.txt");
-                solution.solve(false,true);
+                solution.solve(true,true);
             }
             ImGui::EndChild();
         }

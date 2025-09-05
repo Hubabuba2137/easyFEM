@@ -566,9 +566,9 @@ namespace to_fem{
 
 
             if(it != bc_nodes_to_id_map.end()){
-                float neumann = 0.f;
-                float alfa = 300.f;
-                float t_ext = 1200.f;
+                float neumann = 0.0f;
+                float alfa = 0.0f;
+                float t_ext = 0.0f;
 
                 int bc_id = it->second;
 
