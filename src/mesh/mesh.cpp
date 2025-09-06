@@ -536,7 +536,7 @@ namespace to_fem{
 
         std::vector<Quad_ref> quad_refs = convert_to_fem(nodes, mesh);
 
-        print_mesh(nodes, quad_refs);
+        //print_mesh(nodes, quad_refs);
 
         file << "SimulationTime "      << conf.total_time      << "\n";
         file << "SimulationStepTime "  << conf.time_step       << "\n";
