@@ -138,7 +138,7 @@ std::vector<Node> load_nodes(std::string file_name)
 std::vector<Element> load_quad_elements(std::string file_name)
 {
     std::fstream file;
-    std::vector<Fem::Element> result;
+    std::vector<Element> result;
 
     file.open(file_name);
     if(!file.good()){
@@ -276,7 +276,7 @@ float distance(Node A, Node B)
     return std::sqrt(pow(A.x - B.x,2) + pow(A.y - B.y,2));
 }
 
-Matrix jacobian_mat(Element &element, std::vector<Node> &nodes, float pc_xi, float pc_eta)
+Matrix jacobian_mat(const Element &element, const std::vector<Node> &nodes, const float pc_xi, const float pc_eta)
 {
     Matrix jacobian(2,2);
 
@@ -290,14 +290,14 @@ Matrix jacobian_mat(Element &element, std::vector<Node> &nodes, float pc_xi, flo
     return jacobian;
 }
 
-float det_jacobian(Fem::Matrix jacobian_mat)
+float det_jacobian(Matrix jacobian_mat)
 {
     return jacobian_mat[0][0]*jacobian_mat[1][1] - jacobian_mat[1][0]*jacobian_mat[0][1];
 }
 
-Matrix inv_jacobian_mat(Fem::Matrix jacobian_mat)
+Matrix inv_jacobian_mat(Matrix jacobian_mat)
 {
-    Fem::Matrix inv_jacobian(2,2);
+    Matrix inv_jacobian(2,2);
     float det_J = det_jacobian(jacobian_mat);
     inv_jacobian[0][0] = jacobian_mat[1][1]/det_J;
     inv_jacobian[0][1] = -jacobian_mat[0][1]/det_J;
@@ -307,7 +307,7 @@ Matrix inv_jacobian_mat(Fem::Matrix jacobian_mat)
     return inv_jacobian;
 }
 
-Matrix calc_local_H(Fem::Element &element, std::vector<Fem::Node> &nodes, float conductivity)
+Matrix calc_local_H(const Element &element, const std::vector<Node> &nodes, const float conductivity)
 {
     Fem::Matrix H(4,4);
 
@@ -350,7 +350,7 @@ Matrix calc_local_H(Fem::Element &element, std::vector<Fem::Node> &nodes, float 
     return H;
 }
 
-Matrix calc_local_Hbc(Fem::Element &element, std::vector<Fem::Node> &nodes)
+Matrix calc_local_Hbc(const Element &element, const std::vector<Fem::Node> &nodes)
 {
     Fem::Matrix H_bc(4,4);
 
@@ -395,7 +395,7 @@ Matrix calc_local_Hbc(Fem::Element &element, std::vector<Fem::Node> &nodes)
     return H_bc;
 }
 
-Matrix calc_P(Fem::Element &element, std::vector<Fem::Node> &nodes)
+Matrix calc_P(const Element &element, const std::vector<Node> &nodes)
 {
     Fem::Matrix p_vec(4,1);
 
@@ -446,9 +446,9 @@ Matrix calc_P(Fem::Element &element, std::vector<Fem::Node> &nodes)
     return p_vec;
 }
 
-Matrix calc_local_C(Fem::Element &element, std::vector<Fem::Node> &nodes, float rho, float c)
+Matrix calc_local_C(const Element &element, const std::vector<Node> &nodes, const float rho, const float c)
 {
-    Fem::Matrix C(4,4);
+    Matrix C(4,4);
 
     for(int i=0; i<4; i++){
         Fem::Matrix C_local(4,4);

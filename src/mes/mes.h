@@ -94,14 +94,14 @@ namespace Fem{
     std::vector<Node> set_bc(std::string file_name, std::vector<Node>& nodes);
 
     float distance(Node A, Node B);
-    Matrix jacobian_mat(Element &element, std::vector<Node> &nodes, float pc_xi, float pc_eta);
+    Matrix jacobian_mat(const Element &element, const std::vector<Node> &nodes, const float pc_xi, const float pc_eta);
     float det_jacobian(Matrix jacobian_mat);
     Matrix inv_jacobian_mat(Matrix jacobian_mat);
     
-    Matrix calc_local_H(Element &element, std::vector<Node> &nodes, float conductivity);
-    Matrix calc_local_Hbc(Element &element, std::vector<Node> &nodes);
-    Matrix calc_P(Element &element, std::vector<Node> &nodes);
-    Matrix calc_local_C(Element &element, std::vector<Node> &nodes, float rho, float c);
+    Matrix calc_local_H(const Element &element, const std::vector<Node> &nodes, const float conductivity);
+    Matrix calc_local_Hbc(const Element &element, const std::vector<Fem::Node> &nodes);
+    Matrix calc_P(const Element &element, const std::vector<Node> &nodes);
+    Matrix calc_local_C(const Element &element, const std::vector<Node> &nodes, const float rho, const float c);
     
     void aggregate(Matrix &Global, Element element, Matrix &Local);
     void aggregate_p_vec(Matrix &P_vec, Element element, Matrix &Local);
