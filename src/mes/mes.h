@@ -80,7 +80,7 @@ namespace Fem{
         Matrix P;
         Matrix C;
         
-        Element(int id, int n1, int n2, int n3, int n4) : H_local(3, 3), H_bc(3,3), P(3,1), C(3,3) {
+        Element(int id, int n1, int n2, int n3, int n4) : H_local(4, 4), H_bc(4,4), P(4,1), C(4,4) {
             this->id = id;
             this->node_ids[0] = n1;
             this->node_ids[1] = n2;

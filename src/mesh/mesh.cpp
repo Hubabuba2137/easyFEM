@@ -317,28 +317,29 @@ namespace msh{
         return 0.25*(std::sqrt((a+b+c)*(-a+b+c)*(a-b+c)*(a+b-c)));
     }
 
-    std::vector<go::Vertex> triangles_to_quads(std::vector<go::Triangle> &triangles, std::vector<go::Node> &nodes){
+    std::vector<go::Vertex> triangles_to_quads(std::vector<go::Triangle> &triangles, std::vector<go::Node> &nodes)
+    {
         std::vector<go::Vertex> result;
+        result.reserve(triangles.size() * 3);
 
-        //prealokujemy pamięć bo znamy apriori wielkość wektora
-        result.reserve(triangles.size()*3);
-
-        for(go::Triangle& tr:triangles){
+        for(go::Triangle& tr : triangles){
             go::Node P1 = tr.points[0];
-            go::Node P2 = tr.points[1];
+            go::Node P2 = tr.points[1]; 
             go::Node P3 = tr.points[2];
 
-            go::Node P4((P1.pos.x+P2.pos.x+P3.pos.x)/3.0f,(P1.pos.y+P2.pos.y+P3.pos.y)/3.0f);
-            go::Node P5((P1.pos.x+P2.pos.x)/2,(P1.pos.y+P2.pos.y)/2);
-            go::Node P6((P2.pos.x+P3.pos.x)/2,(P2.pos.y+P3.pos.y)/2);
-            go::Node P7((P3.pos.x+P1.pos.x)/2,(P3.pos.y+P1.pos.y)/2);
+            go::Node P4((P1.pos.x+P2.pos.x+P3.pos.x)/3.0f, (P1.pos.y+P2.pos.y+P3.pos.y)/3.0f);
+            go::Node P5((P1.pos.x+P2.pos.x)/2, (P1.pos.y+P2.pos.y)/2);
+            go::Node P6((P2.pos.x+P3.pos.x)/2, (P2.pos.y+P3.pos.y)/2);
+            go::Node P7((P3.pos.x+P1.pos.x)/2, (P3.pos.y+P1.pos.y)/2);
 
-            std::vector<go::Node> quad_nodes1 = {P1, P5, P4, P7};
-            std::vector<go::Node> quad_nodes2 = {P5, P2, P6, P4};
-            std::vector<go::Node> quad_nodes3 = {P6, P3, P7, P4};
+            // Ensure counter-clockwise ordering for FEM compatibility
+            // Order nodes to form proper quadrilaterals
+            std::vector<go::Node> quad_nodes1 = {P7, P1, P5, P4}; // CCW from P7
+            std::vector<go::Node> quad_nodes2 = {P4, P5, P2, P6}; // CCW from P4  
+            std::vector<go::Node> quad_nodes3 = {P7, P4, P6, P3}; // CCW from P7
 
             go::Vertex quad1(quad_nodes1);
-            go::Vertex quad2(quad_nodes2);
+            go::Vertex quad2(quad_nodes2); 
             go::Vertex quad3(quad_nodes3);
 
             result.push_back(quad1);
@@ -350,7 +351,10 @@ namespace msh{
             nodes.push_back(P6);
             nodes.push_back(P7);
         }
-
+        
+        // Update node IDs after adding new nodes
+        write_node_ids(nodes);
+        
         return result;
     }
 
@@ -409,6 +413,8 @@ namespace msh{
         
         //3. podział trójkątów na quad
         mesh = triangles_to_quads(triangles, nodes);
+
+        remove_duplicate_nodes(nodes);
 
         return mesh;
     }
@@ -499,19 +505,19 @@ namespace to_fem{
         return quad_refs;
     }
 
-    void print_mesh(const std::vector<go::Node> &nodes, std::vector<Quad_ref> triangle_refs){
+    void print_mesh(const std::vector<go::Node> &nodes, std::vector<Quad_ref> quad_refs){
         std::cout<<"*Nodes\n";
         for(int i=0; i<nodes.size(); i++){
             std::cout<<i+1<<", "<<nodes[i].pos.x<<", "<<nodes[i].pos.y<<"\n";
         }
 
         std::cout<<"*Elements\n";
-        for(int i=0; i<triangle_refs.size(); i++){
+        for(int i=0; i<quad_refs.size(); i++){
             std::cout<<i+1<<", "<<
-            triangle_refs[i].node_ids[0]+1<<","<<
-            triangle_refs[i].node_ids[1]+1<<","<<
-            triangle_refs[i].node_ids[2]+1<<","<<
-            triangle_refs[i].node_ids[3]+1<<"\n";
+            quad_refs[i].node_ids[0]+1<<","<<
+            quad_refs[i].node_ids[1]+1<<","<<
+            quad_refs[i].node_ids[2]+1<<","<<
+            quad_refs[i].node_ids[3]+1<<"\n";
         }
     }
 
@@ -529,6 +535,8 @@ namespace to_fem{
         }
 
         std::vector<Quad_ref> quad_refs = convert_to_fem(nodes, mesh);
+
+        print_mesh(nodes, quad_refs);
 
         file << "SimulationTime "      << conf.total_time      << "\n";
         file << "SimulationStepTime "  << conf.time_step       << "\n";
@@ -567,8 +575,8 @@ namespace to_fem{
 
             if(it != bc_nodes_to_id_map.end()){
                 float neumann = 0.0f;
-                float alfa = 0.0f;
-                float t_ext = 0.0f;
+                float alfa = 300.0f;
+                float t_ext = 1200.0f;
 
                 int bc_id = it->second;
 

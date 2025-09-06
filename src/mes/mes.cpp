@@ -545,13 +545,13 @@ void write_to_vtu_file(int step, const std::vector<Fem::Node> &nodes, const std:
            "        <DataArray type=\"Int32\" Name=\"offsets\" format=\"ascii\">\n";
     int offset = 0;
     for (size_t i = 0; i < elements.size(); ++i) {
-        offset += 4;  // Zmieniono z 3 na 4 (czworokąt ma 4 węzły)
+        offset += 4; 
         out << "          " << offset << "\n";
     }
     out << "        </DataArray>\n"
            "        <DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n";
     for (size_t i = 0; i < elements.size(); ++i) {
-        out << "          9\n";  // Zmieniono z 5 na 9 (typ VTK_QUAD)
+        out << "          9\n";
     }
     out << "        </DataArray>\n"
            "      </Cells>\n";
