@@ -145,15 +145,7 @@ namespace Fem{
         std::vector<Node> nodes;
         std::vector<Element> elements;
 
-        Solution(Matrix &Global_H, Matrix &Global_C, Matrix &Global_P, GlobalData &conf, std::vector<Node> &nodes, std::vector<Element> &elements): Global_H(4,4), Global_C(4,4), Global_P(4,4){
-            this->Global_H = Global_H;
-            this->Global_C = Global_C;
-            this->Global_P = Global_P;
-            this->conf = conf;
-            this->nodes = nodes;
-            this->elements = elements;
-        }
-
+        /*
         Solution(std::string filename): Global_H(4,4), Global_C(4,4), Global_P(4,1){
             this->nodes = load_nodes(filename);
 
@@ -204,12 +196,9 @@ namespace Fem{
                 i++;
                 showProgress(i, max_iter);
             }
-        }
-
-        /*
-        Solution(std::vector<Fem::Node> &nodes, std::vector<Fem::Element> &elements, GlobalData &conf): Global_H(4,4), Global_C(4,4), Global_P(4,4){
-            
         }*/
+
+        Solution(std::string filename);
 
         void solve(bool write_to_vtu=false, bool write_temp_in_time = true);
     };

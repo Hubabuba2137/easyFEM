@@ -7,6 +7,7 @@
 #include "../include/raymath.h"
 
 #include <vector>
+#include <future>
 
 #include "app_ui/axis.h"
 #include "app_ui/grid.h"
@@ -29,6 +30,8 @@ MainWindow::MainWindow()
 
     go::Vertex polygon;
     std::vector<go::Vertex> mesh;
+
+    std::thread worker_thread; //for fem_solver
 
     while (!WindowShouldClose())
     {
@@ -108,7 +111,8 @@ MainWindow::MainWindow()
 
             if (ImGui::Button("Solve")){
                 Fem::Solution solution(DATA_DIR "/fem_data.txt");
-                solution.solve(true,true);
+                solution.solve(false, true);
+                
             }
             ImGui::EndChild();
         }

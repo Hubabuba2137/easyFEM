@@ -572,7 +572,57 @@ void write_to_vtu_file(int step, const std::vector<Fem::Node> &nodes, const std:
     out.close();
 }
 
-void Fem::Solution::solve(bool write_to_vtu, bool write_temp_in_time)
+Solution::Solution(std::string filename): Global_H(4,4), Global_C(4,4), Global_P(4,1){
+    this->nodes = load_nodes(filename);
+    this->nodes = set_bc(filename, this->nodes);
+    this->elements = load_quad_elements(filename);
+    this->conf = load_configuration(filename);
+
+    this->conf.node_number = this->nodes.size();
+    this->conf.elem_number= this->elements.size();
+
+    print_config(this->conf);
+
+    //inicjalizacja macierzy globalnych
+    this->Global_H = Matrix(conf.node_number,conf.node_number);
+    this->Global_C = Matrix(conf.node_number,conf.node_number);
+    this->Global_P = Matrix(conf.node_number,1);
+
+    //tworzenie macierzy dla każdego elementu
+    std::cout<<"Assembling elemental matrices...\n";
+    int i =0;
+    int max_iter = this->elements.size();
+    for(Element &element: this->elements){
+                
+        element.H_local = calc_local_H(element, this->nodes, this->conf.conductivity);
+        element.H_bc = calc_local_Hbc(element, this->nodes);
+        element.P = calc_P(element, this->nodes);
+        element.C = calc_local_C(element, this->nodes, this->conf.density, this->conf.specific_heat);
+                
+        //sumowanie H_l i H_bc
+        for(int row=0; row<4; row++){
+            for(int col=0; col<4; col++){
+                element.H_local[row][col] += element.H_bc[row][col];
+            }
+        }
+        
+        i++;
+        showProgress(i, max_iter);
+    }
+
+    //agreagacja macierzy globalnych
+    std::cout<<"Agregating matrices...\n";
+    i=0;
+    for(Fem::Element &it:elements){
+        aggregate(this->Global_H, it, it.H_local);
+        aggregate(this->Global_C, it, it.C);
+        aggregate_p_vec(this->Global_P, it, it.P);
+        i++;
+        showProgress(i, max_iter);
+    }
+}
+
+void Solution::solve(bool write_to_vtu, bool write_temp_in_time)
 {
     std::vector<double> t0(conf.node_number, conf.init_temperature);
     std::vector<double> t1 = t0;
@@ -589,6 +639,7 @@ void Fem::Solution::solve(bool write_to_vtu, bool write_temp_in_time)
     std::vector<temp_data> temperature_data;
 
     std::cout<<"Beginning time integration...\n";
+
     for(double time = conf.time_step; time <= conf.total_time; time+=conf.time_step){
 
         //showProgress(time, conf.total_time);
